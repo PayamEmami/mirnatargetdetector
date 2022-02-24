@@ -1,4 +1,4 @@
-# nf-core/mirnatargetdetector: Output
+# payamemami/mirnatargetdetector: Output
 
 ## Introduction
 

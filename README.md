@@ -1,4 +1,3 @@
-# ![nf-core/mirnatargetdetector](docs/images/nf-core-mirnatargetdetector_logo.png)
 
 **Finding miRNA targets**.
 
@@ -11,7 +10,7 @@
 
 ## Introduction
 
-**nf-core/mirnatargetdetector** is a bioinformatics best-practise analysis pipeline for
+**payamemami/mirnatargetdetector** is a bioinformatics best-practise analysis pipeline for
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
 
@@ -24,7 +23,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 3. Download the pipeline and test it on a minimal dataset with a single command:
 
     ```bash
-    nextflow run nf-core/mirnatargetdetector -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+    nextflow run payamemami/mirnatargetdetector -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>
     ```
 
     > Please check [nf-core/configs](https://github.com/nf-core/configs#documentation) to see if a custom config file to run nf-core pipelines already exists for your Institute. If so, you can simply use `-profile <institute>` in your command. This will enable either `docker` or `singularity` and set the appropriate execution settings for your local compute environment.
@@ -32,7 +31,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 4. Start running your own analysis!
 
     ```bash
-    nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
+    nextflow run payamemami/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
     ```
 
 See [usage docs](docs/usage.md) for all of the available options when running the pipeline.
@@ -60,22 +59,3 @@ of this pipeline:
 ## Contributions and Support
 
 If you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).
-
-For further information or help, don't hesitate to get in touch on the [Slack `#mirnatargetdetector` channel](https://nfcore.slack.com/channels/mirnatargetdetector) (you can join with [this invite](https://nf-co.re/join/slack)).
-
-## Citations
-
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi. -->
-<!-- If you use  nf-core/mirnatargetdetector for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-You can cite the `nf-core` publication as follows:
-
-> **The nf-core framework for community-curated bioinformatics pipelines.**
->
-> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
->
-> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).
-
-In addition, references of tools and data used in this pipeline are as follows:
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->

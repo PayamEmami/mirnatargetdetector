@@ -1,6 +1,6 @@
-# nf-core/mirnatargetdetector: Usage
+# payamemami/mirnatargetdetector: Usage
 
-## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/mirnatargetdetector/usage](https://nf-co.re/mirnatargetdetector/usage)
+## :warning: Please read this documentation on the nf-core website: [https://github.com/PayamEmami/docs/usage](https://github.com/PayamEmami/docs/usage.md)
 
 > _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
 
@@ -11,7 +11,7 @@
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
+nextflow run payamemami/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -35,7 +35,7 @@ results         # Finished results (configurable, see below)
 For example to set the kmer to 5 we use:
 
 ```bash
-nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' --kmer 5 -profile docker
+nextflow run payamemami/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' --kmer 5 -profile docker
 ```
 
 ### Updating the pipeline
@@ -75,19 +75,19 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 
 * `docker`
   * A generic configuration profile to be used with [Docker](https://docker.com/)
-  * Pulls software from Docker Hub: [`nfcore/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
+  * Pulls software from Docker Hub: [`payamemami/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
 * `singularity`
   * A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
-  * Pulls software from Docker Hub: [`nfcore/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
+  * Pulls software from Docker Hub: [`payamemami/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
 * `podman`
   * A generic configuration profile to be used with [Podman](https://podman.io/)
-  * Pulls software from Docker Hub: [`nfcore/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
+  * Pulls software from Docker Hub: [`payamemami/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
 * `shifter`
   * A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
-  * Pulls software from Docker Hub: [`nfcore/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
+  * Pulls software from Docker Hub: [`payamemami/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
 * `charliecloud`
   * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
-  * Pulls software from Docker Hub: [`nfcore/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
+  * Pulls software from Docker Hub: [`payamemami/mirnatargetdetector`](https://hub.docker.com/r/nfcore/mirnatargetdetector/)
 * `conda`
   * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.
   * A generic configuration profile to be used with [Conda](https://conda.io/docs/)

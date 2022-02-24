@@ -37,7 +37,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
     nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
     ```
 
-See [usage docs](usage) for all of the available options when running the pipeline.
+See [usage docs](docs/usage.md) for all of the available options when running the pipeline.
 
 ## Pipeline Summary
 
@@ -48,7 +48,7 @@ By default, the pipeline currently performs the following:
 
 ## Documentation
 
-The nf-core/mirnatargetdetector pipeline comes with documentation about the pipeline: [usage](usage) and [output](output).
+The nf-core/mirnatargetdetector pipeline comes with documentation about the pipeline: [usage](docs/usage.md) and [output](docs/output.md).
 
 ## Credits
 

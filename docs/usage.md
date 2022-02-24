@@ -1,9 +1,5 @@
 # payamemami/mirnatargetdetector: Usage
 
-## :warning: Please read this documentation on the nf-core website: [https://github.com/PayamEmami/docs/usage](https://github.com/PayamEmami/docs/usage.md)
-
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
-
 ## Introduction
 
 ## Running the pipeline

@@ -2,17 +2,15 @@
 
 **Finding miRNA targets**.
 
-[![GitHub Actions CI Status](https://github.com/nf-core/mirnatargetdetector/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/mirnatargetdetector/actions)
-[![GitHub Actions Linting Status](https://github.com/nf-core/mirnatargetdetector/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/mirnatargetdetector/actions)
+[![GitHub Actions CI Status](https://github.com/payamemami/mirnatargetdetector/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/mirnatargetdetector/actions)
+[![GitHub Actions Linting Status](https://github.com/payamemami/mirnatargetdetector/workflows/nf-core%20linting/badge.svg)](https://github.com/payamemami/mirnatargetdetector/actions)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A520.04.0-brightgreen.svg)](https://www.nextflow.io/)
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](https://bioconda.github.io/)
-[![Docker](https://img.shields.io/docker/automated/nfcore/mirnatargetdetector.svg)](https://hub.docker.com/r/nfcore/mirnatargetdetector)
-[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23mirnatargetdetector-4A154B?logo=slack)](https://nfcore.slack.com/channels/mirnatargetdetector)
+[![Docker](https://img.shields.io/docker/automated/payamemami/mirnatargetdetector.svg)](https://hub.docker.com/r/nfcore/mirnatargetdetector)
 
 ## Introduction
 
-<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
 **nf-core/mirnatargetdetector** is a bioinformatics best-practise analysis pipeline for
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.

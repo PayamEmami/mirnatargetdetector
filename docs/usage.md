@@ -37,6 +37,32 @@ For example to set the kmer to 5 we use:
 ```bash
 nextflow run payamemami/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' --kmer 5 -profile docker
 ```
+## Running on UPPMAX
+
+To run the workflow on UPPMAX, first ssh to UPPMAX:
+
+```bash
+ssh -AX youusername@rackham.uppmax.uu.se
+```
+
+Load Nexflow:
+
+```bash
+module load bioinfo-tools
+module load Nextflow/20.10.0
+```
+
+Finally, you can run:
+
+```bash
+nextflow run payamemami/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile uppmax --project "project name" --clusterOptions "-M Name of the cluster if any!"
+```
+
+Remember that you need to set the correct project name and cluster option. If there is no cluster option you can remove the following from the command above!
+
+```bash
+--clusterOptions "-M Name of the cluster if any!"
+```
 
 ### Updating the pipeline
 

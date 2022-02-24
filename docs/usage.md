@@ -6,14 +6,12 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
-
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/mirnatargetdetector --input '*_R{1,2}.fastq.gz' -profile docker
+nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -26,13 +24,26 @@ results         # Finished results (configurable, see below)
 .nextflow_log   # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
+### Parameters
+
+* `--number_of_chunks_mirna`: Number of chunks to split the miRNA sequences to
+* `--number_of_chunks_utr`: Number of chunks to split the UTR sequences to
+* `--kmer`: kmer number for randomization
+* `--skip_miranda`: Skips miranda
+* `--skip_rnahybrid`: Skips RNAHybrid
+
+For example to set the kmer to 5 we use:
+
+```bash
+nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' --kmer 5 -profile docker
+```
 
 ### Updating the pipeline
 
 When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
 
 ```bash
-nextflow pull nf-core/mirnatargetdetector
+nextflow pull payamemami/mirnatargetdetector
 ```
 
 ### Reproducibility

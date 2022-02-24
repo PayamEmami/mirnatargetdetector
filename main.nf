@@ -32,21 +32,7 @@ if (params.validate_params) {
 /* --     Collect configuration parameters     -- */
 ////////////////////////////////////////////////////
 
-// Check if genome exists in the config file
-if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
-    exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(', ')}"
-}
 
-// TODO nf-core: Add any reference files that are needed
-// Configurable reference genomes
-//
-// NOTE - THIS IS NOT USED IN THIS PIPELINE, EXAMPLE ONLY
-// If you want to use the channel below in a process, define the following:
-//   input:
-//   file fasta from ch_fasta
-//
-params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-if (params.fasta) { ch_fasta = file(params.fasta, checkIfExists: true) }
 
 // Check AWS batch settings
 if (workflow.profile.contains('awsbatch')) {
@@ -68,26 +54,13 @@ ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 /*
  * Create a channel for input read files
  */
-if (params.input_paths) {
-    if (params.single_end) {
-        Channel
-            .from(params.input_paths)
-            .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true) ] ] }
-            .ifEmpty { exit 1, 'params.input_paths was empty - no input files supplied' }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
-    } else {
-        Channel
-            .from(params.input_paths)
-            .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] ] }
-            .ifEmpty { exit 1, 'params.input_paths was empty - no input files supplied' }
-            .into { ch_read_files_fastqc; ch_read_files_trimming }
-    }
-} else {
-    Channel
-        .fromFilePairs(params.input, size: params.single_end ? 1 : 2)
-        .ifEmpty { exit 1, "Cannot find any reads matching: ${params.input}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
-        .into { ch_read_files_fastqc; ch_read_files_trimming }
-}
+
+
+Channel.fromPath(params.input).ifEmpty { exit 1, 'params.input_mirna was empty - no input files supplied' }.into{targets}
+Channel.fromPath(params.input_utr).ifEmpty { exit 1, 'params.input_utr was empty - no input files supplied' }.into{reference}
+
+
+
 
 ////////////////////////////////////////////////////
 /* --         PRINT PARAMETER SUMMARY          -- */
@@ -100,8 +73,12 @@ if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']         = workflow.runName
 // TODO nf-core: Report custom parameters here
 summary['Input']            = params.input
-summary['Fasta Ref']        = params.fasta
-summary['Data Type']        = params.single_end ? 'Single-End' : 'Paired-End'
+summary['UTRs']        = params.input_utr
+summary['kmer']        = params.kmer
+summary['number_of_chunks_mirna']        = params.number_of_chunks_mirna
+summary['number_of_chunks_utr']        = params.number_of_chunks_utr
+summary['skip_miranda']        = params.skip_miranda
+summary['skip_rnahybrid']        = params.skip_rnahybrid
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['Output dir']       = params.outdir
@@ -163,85 +140,214 @@ process get_software_versions {
     """
     echo $workflow.manifest.version > v_pipeline.txt
     echo $workflow.nextflow.version > v_nextflow.txt
-    fastqc --version > v_fastqc.txt
-    multiqc --version > v_multiqc.txt
+    #fastqc --version > v_fastqc.txt
+    #multiqc --version > v_multiqc.txt
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
 }
 
+
+
 /*
- * STEP 1 - FastQC
+ * STEP 1 - Split utrs
  */
-process fastqc {
-    tag "$name"
-    label 'process_medium'
-    publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode,
-        saveAs: { filename ->
-                      filename.indexOf('.zip') > 0 ? "zips/$filename" : "$filename"
-        }
 
-    input:
-    set val(name), file(reads) from ch_read_files_fastqc
+process split_utrs{
+  tag "$ref"
+  label 'process_medium'
+  publishDir "${params.outdir}/split_UTRs", mode: params.publish_dir_mode
 
-    output:
-    file '*_fastqc.{zip,html}' into ch_fastqc_results
+input:
+file ref from reference
+output:
+file "*.fasta" into shuffle_process
 
-    script:
-    """
-    fastqc --quiet --threads $task.cpus $reads
-    """
+"""
+pyfasta split -n $params.number_of_chunks_utr $ref
+"""
+
 }
 
+
 /*
- * STEP 2 - MultiQC
+ * STEP 2 - Split mirna
  */
-process multiqc {
-    publishDir "${params.outdir}/MultiQC", mode: params.publish_dir_mode
 
-    input:
-    file (multiqc_config) from ch_multiqc_config
-    file (mqc_custom_config) from ch_multiqc_custom_config.collect().ifEmpty([])
-    // TODO nf-core: Add in log files from your new processes for MultiQC to find!
-    file ('fastqc/*') from ch_fastqc_results.collect().ifEmpty([])
-    file ('software_versions/*') from ch_software_versions_yaml.collect()
-    file workflow_summary from ch_workflow_summary.collectFile(name: "workflow_summary_mqc.yaml")
+process split_mirna{
+  tag "$ref"
+  label 'process_medium'
+  publishDir "${params.outdir}/split_mirna", mode: params.publish_dir_mode
 
-    output:
-    file "*multiqc_report.html" into ch_multiqc_report
-    file "*_data"
-    file "multiqc_plots"
 
-    script:
-    rtitle = ''
-    rfilename = ''
-    if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
-        rtitle = "--title \"${workflow.runName}\""
-        rfilename = "--filename " + workflow.runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report"
-    }
-    custom_config_file = params.multiqc_config ? "--config $mqc_custom_config" : ''
-    // TODO nf-core: Specify which MultiQC modules to use with -m for a faster run time
-    """
-    multiqc -f $rtitle $rfilename $custom_config_file .
-    """
+
+input:
+file ref from targets
+output:
+file "*.fasta" into shuffle_process_f1
+
+"""
+pyfasta split -n $params.number_of_chunks_mirna $ref
+"""
+
 }
 
+
+shuffle_process_fl_target=shuffle_process_f1.flatten()
+
+shuffle_process_fl=shuffle_process.flatten()
+
+
 /*
- * STEP 3 - Output Description HTML
+ * STEP 3 - shuffle utrs
  */
-process output_documentation {
-    publishDir "${params.outdir}/pipeline_info", mode: params.publish_dir_mode
 
-    input:
-    file output_docs from ch_output_docs
-    file images from ch_output_docs_images
+process shuffle_utrs{
+ tag "$ref"
+ label 'process_medium'
+ publishDir "${params.outdir}/shuffle_utrs", mode: params.publish_dir_mode
 
-    output:
-    file 'results_description.html'
 
-    script:
-    """
-    markdown_to_html.py $output_docs -o results_description.html
-    """
+input:
+file ref from shuffle_process_fl
+output:
+file "out/${ref.baseName}_shuffled_combined.fasta" into miranda_process, rnahybrid_process
+
+"""
+mkdir out
+mkdir tmp
+fasta-shuffle-letters -kmer $params.kmer -seed 100 $ref tmp/$ref
+cat $ref tmp/$ref > out/${ref.baseName}_shuffled_combined.fasta
+"""
+
+}
+
+
+
+/*
+ * STEP 4 - shuffle mirna
+ */
+
+process shuffle_mirna{
+  tag "$ref"
+  label 'process_medium'
+  publishDir "${params.outdir}/shuffle_mirna", mode: params.publish_dir_mode
+
+
+input:
+file ref from shuffle_process_fl_target
+output:
+file "out/${ref.baseName}_shuffled_combined.fasta" into miranda_process_targets, rnahybrid_process_targets
+
+"""
+mkdir out
+mkdir tmp
+fasta-shuffle-letters -kmer $params.kmer -seed 100 $ref tmp/$ref
+cat $ref tmp/$ref > out/${ref.baseName}_shuffled_combined.fasta
+"""
+}
+
+
+/*
+ * STEP 4 - perform miranda
+ */
+
+
+process miranda{
+tag "$query $ref"
+label 'process_medium'
+publishDir "${params.outdir}/miranda", mode: params.publish_dir_mode
+
+when:
+params.skip_miranda == false
+
+input:
+each file(query) from miranda_process_targets
+each file(ref) from miranda_process
+
+output:
+file "out/${ref.baseName}_${query.baseName}_results.txt" into combine
+
+"""
+mkdir out
+miranda $query $ref  -quiet -strict -out out/${ref.baseName}_${query.baseName}_results.txt
+"""
+
+}
+
+
+/*
+ * STEP 5 - perform rnahybrid
+ */
+
+
+process rnahybrid{
+ publishDir 'results/rnahybrid'
+tag "$query $ref"
+label 'process_medium'
+publishDir "${params.outdir}/rnahybrid", mode: params.publish_dir_mode
+
+when:
+params.skip_rnahybrid == false
+
+input:
+each file(query) from rnahybrid_process_targets
+each file(ref) from rnahybrid_process
+
+output:
+file "out/${ref.baseName}_${query.baseName}_results_rnahybrid.txt" into combine_hybrid
+
+"""
+mkdir out
+RNAhybrid -s 3utr_fly -m 9000 -n 100 -q $query -t $ref > out/${ref.baseName}_${query.baseName}_results_rnahybrid.txt
+"""
+
+}
+
+
+/*
+ * STEP 6 - merge miranda
+ */
+
+
+process miranda_merge{
+  label 'process_medium'
+  publishDir "${params.outdir}/miranda_merge", mode: params.publish_dir_mode
+
+  when:
+  params.skip_miranda == false
+
+input:
+file query from combine.collect()
+
+
+output:
+file "miranda_merged_results.txt" into combineOut
+
+"""
+cat *.txt > miranda_merged_results.txt
+
+"""
+
+}
+
+
+process rnahybrid_merge{
+  label 'process_medium'
+  publishDir "${params.outdir}/rnahybrid_merge", mode: params.publish_dir_mode
+
+  when:
+  params.skip_rnahybrid == false
+
+input:
+file query from combine_hybrid.collect()
+
+output:
+file "rnahybrid_merged_results.txt" into combineOutRnahybrid
+
+"""
+cat *.txt > rnahybrid_merged_results.txt
+
+"""
 }
 
 /*
@@ -277,20 +383,7 @@ workflow.onComplete {
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
-    // TODO nf-core: If not using MultiQC, strip out this code (including params.max_multiqc_email_size)
-    // On success try attach the multiqc report
-    def mqc_report = null
-    try {
-        if (workflow.success) {
-            mqc_report = ch_multiqc_report.getVal()
-            if (mqc_report.getClass() == ArrayList) {
-                log.warn "[nf-core/mirnatargetdetector] Found multiple reports from process 'multiqc', will use only one"
-                mqc_report = mqc_report[0]
-            }
-        }
-    } catch (all) {
-        log.warn "[nf-core/mirnatargetdetector] Could not attach MultiQC report to summary email"
-    }
+
 
     // Check if we are only sending emails on failure
     email_address = params.email

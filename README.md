@@ -33,28 +33,22 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 4. Start running your own analysis!
 
-    <!-- TODO nf-core: Update the example "typical command" below used to run the pipeline -->
-
     ```bash
-    nextflow run nf-core/mirnatargetdetector -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input '*_R{1,2}.fastq.gz' --genome GRCh37
+    nextflow run nf-core/mirnatargetdetector --input 'path to miRNA fasta file' --input_utr 'path to UTR fasta file' -profile docker
     ```
 
-See [usage docs](https://nf-co.re/mirnatargetdetector/usage) for all of the available options when running the pipeline.
+See [usage docs](usage) for all of the available options when running the pipeline.
 
 ## Pipeline Summary
 
 By default, the pipeline currently performs the following:
 
-<!-- TODO nf-core: Fill in short bullet-pointed list of default steps of pipeline -->
-
-* Sequencing quality control (`FastQC`)
-* Overall pipeline run summaries (`MultiQC`)
+* miranda target detection
+* RNAHybrid target detection
 
 ## Documentation
 
-The nf-core/mirnatargetdetector pipeline comes with documentation about the pipeline: [usage](https://nf-co.re/mirnatargetdetector/usage) and [output](https://nf-co.re/mirnatargetdetector/output).
-
-<!-- TODO nf-core: Add a brief overview of what the pipeline does and how it works -->
+The nf-core/mirnatargetdetector pipeline comes with documentation about the pipeline: [usage](usage) and [output](output).
 
 ## Credits
 

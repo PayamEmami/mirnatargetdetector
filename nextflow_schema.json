@@ -11,20 +11,49 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
-                "input"
+                "input",
+                "input_utr",
+                "number_of_chunks_mirna",
+                "number_of_chunks_utr",
+                "kmer"
             ],
             "properties": {
                 "input": {
                     "type": "string",
                     "fa_icon": "fas fa-dna",
-                    "description": "Input FastQ files.",
+                    "description": "input miRNA fasta",
                     "help_text": "Use this to specify the location of your input FastQ files. For example:\n\n```bash\n--input 'path/to/data/sample_*_{1,2}.fastq'\n```\n\nPlease note the following requirements:\n\n1. The path must be enclosed in quotes\n2. The path must have at least one `*` wildcard character\n3. When using the pipeline with paired end data, the path must use `{1,2}` notation to specify read pairs.\n\nIf left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`"
                 },
-                "single_end": {
+                "targets": {
+                    "type": "string",
+                    "description": "input UTR fasta"
+                },
+                "number_of_chunks_mirna": {
+                    "type": "integer",
+                    "default": 100,
+                    "description": "Number of chunks to split miRNA sequences"
+                },
+                "number_of_chunks_utr": {
+                    "type": "integer",
+                    "default": 40,
+                    "description": "Number of chunks to split UTR sequences"
+                },
+                "kmer": {
+                    "type": "integer",
+                    "default": 3,
+                    "description": "kmer number for randomization"
+                },
+                "skip_miranda": {
                     "type": "boolean",
-                    "description": "Specifies that the input is single-end reads.",
-                    "fa_icon": "fas fa-align-center",
-                    "help_text": "By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--input`. For example:\n\n```bash\n--single_end --input '*.fastq'\n```\n\nIt is not possible to run a mixture of single-end and paired-end files in one run."
+                    "description": "Do not run miranda",
+                    "hidden": true,
+                    "default": false,
+                },
+                "skip_rnahybrid": {
+                    "type": "boolean",
+                    "description": "Do not run miranda",
+                    "hidden": true,
+                    "default": false,
                 },
                 "outdir": {
                     "type": "string",
@@ -47,18 +76,6 @@
             "fa_icon": "fas fa-dna",
             "description": "Options for the reference genome indices used to align reads.",
             "properties": {
-                "genome": {
-                    "type": "string",
-                    "description": "Name of iGenomes reference.",
-                    "fa_icon": "fas fa-book",
-                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`.\n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
-                },
-                "fasta": {
-                    "type": "string",
-                    "fa_icon": "fas fa-font",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible."
-                },
                 "igenomes_base": {
                     "type": "string",
                     "description": "Directory / URL base for iGenomes references.",
